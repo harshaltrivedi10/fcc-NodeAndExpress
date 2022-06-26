@@ -1,9 +1,15 @@
 let express = require('express');
+let bodyParser = require('body-parser');
 require('dotenv').config();
 
 let app = express();
 let path = __dirname;
 let staticAssets = path + "/public";
+
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
+
 // Challenge 1 - output something to the console
 console.log("Hello World!");
 
@@ -34,11 +40,30 @@ app.get("/json", (req, res) => {
   res.json({message});
 })
 
+// Challenge 8 - Send Time as a response using middleware chaining
 app.get("/now", (req, res, next) => {
   req.time = new Date().toString();
   next();
 }, (req, res) => {
   res.send({time: req.time});
-})
+});
 
- module.exports = app;
+// Challenge 9 - Using Route Parameters
+app.get("/:word/echo", (req, res, next) => {
+  let word = req.params.word;
+  res.send({echo: word});
+});
+
+app.get("/name", (req, res, next) => {
+    let firstName = req.query.first;
+    let lastName = req.query.last;
+    res.send({name: `${firstName} ${lastName}`});
+  })
+  
+ app.post("/name", (req, res, next) => {
+    let firstName = req.body.first;
+    let lastName = req.body.last;
+    res.json({name: `${firstName} ${lastName}`});
+  })
+
+module.exports = app;
